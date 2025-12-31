@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - ToDo App</title>
+<style>
+* { box-sizing:border-box; font-family:Arial,sans-serif; transition:all 0.3s; }
+body { margin:0; height:100vh; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; justify-content:center; align-items:center; color:#000; position:relative;}
+body.dark { background:#1b1b1b; color:#f0f0f0;}
+#darkToggle { position:absolute; top:20px; left:20px; font-size:28px; cursor:pointer; background:none; border:none; color:inherit;}
+.card { background:white; width:350px; padding:25px; border-radius:15px; box-shadow:0 15px 30px rgba(0,0,0,0.2);}
+body.dark .card { background:#333;}
+h1{text-align:center;}
+input{width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;}
+body.dark input{background:#555;color:#f0f0f0;border:1px solid #888;}
+button{width:100%;padding:12px;border-radius:8px;border:none;background:#667eea;color:white;font-size:16px;cursor:pointer;}
+button:hover{background:#5a67d8;}
+body.dark button{background:#444;}
+body.dark button:hover{background:#666;}
+.link{text-align:center;margin-top:10px;color:#667eea;cursor:pointer;font-size:14px;}
+body.dark .link{color:#f0a500;}
+</style>
+</head>
+<body>
+
+<button id="darkToggle">🌙</button>
+
+<div class="card">
+    <h1>Login</h1>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div class="link" onclick="location.href='signup.html'">Don't have an account? Sign Up</div>
+    <div class="link" onclick="location.href='forgot.html'">Forgot password?</div>
+</div>
+
+<script>
+const darkToggle=document.getElementById("darkToggle");
+if(localStorage.getItem("darkMode")==="true") document.body.classList.add("dark");
+updateDarkIcon();
+darkToggle.addEventListener("click",()=>{ document.body.classList.toggle("dark"); localStorage.setItem("darkMode",document.body.classList.contains("dark")); updateDarkIcon(); });
+function updateDarkIcon(){ darkToggle.textContent=document.body.classList.contains("dark")?"☀️":"🌙"; }
+
+function login(){
+    const user=document.getElementById("username").value.trim();
+    const pass=document.getElementById("password").value;
+    if(!user||!pass){ alert("Fill all fields"); return; }
+
+    let users=JSON.parse(localStorage.getItem("users"))||{};
+    if(!users[user] || users[user].password!==pass){ alert("Wrong username or password"); return; }
+
+    localStorage.setItem("currentUser",user);
+    location.href="todo.html";
+}
+</script>
+
+</body>
+</html>

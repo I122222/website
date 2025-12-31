@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToDo App</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif;transition:all 0.3s;}
+body{margin:0;height:100vh;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;justify-content:center;align-items:center;color:#000;position:relative;}
+body.dark{background:#1b1b1b;color:#f0f0f0;}
+#darkToggle{position:absolute;top:20px;left:20px;font-size:28px;cursor:pointer;background:none;border:none;color:inherit;}
+.card{background:white;width:350px;padding:25px;border-radius:15px;box-shadow:0 15px 30px rgba(0,0,0,0.2);}
+body.dark .card{background:#333;}
+h1{text-align:center;}
+input{width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;}
+body.dark input{background:#555;color:#f0f0f0;border:1px solid #888;}
+button{width:100%;padding:12px;border-radius:8px;border:none;background:#667eea;color:white;font-size:16px;cursor:pointer;}
+button:hover{background:#5a67d8;}
+body.dark button{background:#444;}
+body.dark button:hover{background:#666;}
+ul{list-style:none;padding:0;margin-top:20px;}
+li{background:#f3f4f6;padding:10px;border-radius:8px;margin-bottom:10px;display:flex;justify-content:space-between;}
+body.dark li{background:#555;}
+.delete{background:red;padding:6px 10px;border-radius:6px;}
+.logout{margin-top:15px;background:#444;}
+</style>
+</head>
+<body>
+
+<button id="darkToggle">🌙</button>
+
+<div class="card">
+    <h1 id="welcome"></h1>
+    <input id="taskInput" placeholder="Add a task">
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+let currentUser=localStorage.getItem("currentUser");
+if(!currentUser){ location.href="login.html"; }
+
+const darkToggle=document.getElementById("darkToggle");
+const darkMode=localStorage.getItem("darkMode")==="true";
+if(darkMode)document.body.classList.add("dark");
+updateDarkIcon();
+darkToggle.addEventListener("click",()=>{ document.body.classList.toggle("dark"); localStorage.setItem("darkMode",document.body.classList.contains("dark")); updateDarkIcon(); });
+function updateDarkIcon(){ darkToggle.textContent=document.body.classList.contains("dark")?"☀️":"🌙"; }
+
+const users=JSON.parse(localStorage.getItem("users"))||{};
+document.getElementById("welcome").textContent="Hello, "+currentUser;
+
+function addTask(){
+    const text=document.getElementById("taskInput").value.trim();
+    if(!text)return;
+    users[currentUser].tasks.push(text);
+    localStorage.setItem("users",JSON.stringify(users));
+    document.getElementById("taskInput").value="";
+    loadTasks();
+}
+
+function loadTasks(){
+    const ul=document.getElementById("taskList");
+    ul.innerHTML="";
+    users[currentUser].tasks.forEach((task,i)=>{
+        const li=document.createElement("li");
+        li.innerHTML=`<span>${task}</span><button class="delete" onclick="deleteTask(${i})">X</button>`;
+        ul.appendChild(li);
+    });
+}
+loadTasks();
+
+function deleteTask(i){
+    users[currentUser].tasks.splice(i,1);
+    localStorage.setItem("users",JSON.stringify(users));
+    loadTasks();
+}
+
+function logout(){
+    localStorage.removeItem("currentUser");
+    location.href="login.html";
+}
+
+document.getElementById("taskInput").addEventListener("keydown",e=>{ if(e.key==="Enter") addTask(); });
+</script>
+
+</body>
+</html>
